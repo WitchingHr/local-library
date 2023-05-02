@@ -3,11 +3,25 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const mongoose = require('mongoose');
+
+require('dotenv').config();
+const USER = process.env.USER;
+const PASSWORD = process.env.PASSWORD;
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+// Connect to MongoDB
+mongoose.set('strictQuery', false);
+const mongoDB = `mongodb+srv://${USER}:${PASSWORD}@cluster0.1reujyd.mongodb.net/local-library?retryWrites=true&w=majority`;
+
+main().catch(err => console.log(err));
+async function main() {
+  await mongoose.connect(mongoDB);
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
