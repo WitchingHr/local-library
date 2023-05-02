@@ -6,7 +6,6 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 
 require('dotenv').config();
-const USER = process.env.USER;
 const PASSWORD = process.env.PASSWORD;
 
 const indexRouter = require('./routes/index');
@@ -17,7 +16,7 @@ const app = express();
 
 // Connect to MongoDB
 mongoose.set('strictQuery', false);
-const mongoDB = `mongodb+srv://${USER}:${PASSWORD}@cluster0.1reujyd.mongodb.net/local-library?retryWrites=true&w=majority`;
+const mongoDB = `mongodb+srv://local-library-user:${PASSWORD}@cluster0.1reujyd.mongodb.net/local-library?retryWrites=true&w=majority`;
 
 main().catch(err => console.log(err));
 async function main() {
