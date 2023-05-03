@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const compression = require('compression');
 
 require('dotenv').config();
 const PASSWORD = process.env.PASSWORD;
@@ -16,7 +17,8 @@ const app = express();
 
 // Connect to MongoDB
 mongoose.set('strictQuery', false);
-const mongoDB = `mongodb+srv://local-library-user:${PASSWORD}@cluster0.1reujyd.mongodb.net/local-library?retryWrites=true&w=majority`;
+const dev_db_url = `mongodb+srv://local-library-user:${PASSWORD}@cluster0.1reujyd.mongodb.net/local-library?retryWrites=true&w=majority`;
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 main().catch(err => console.log(err));
 async function main() {
@@ -26,6 +28,18 @@ async function main() {
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+// Set up rate limiter: maximum of twenty requests per minute
+const RateLimit = require("express-rate-limit");
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+// Apply rate limiter to all requests
+app.use(limiter);
+
+app.use(helmet()); // Protects against well known vulnerabilities
+app.use(compression()); // Compress all routes
 
 app.use(logger('dev'));
 app.use(express.json());
